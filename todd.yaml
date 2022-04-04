@@ -1,0 +1,28 @@
+name: todd
+image: docker.io/alicewasko/todd:1.5
+ports:
+  - name: http
+    containerPort: 80
+  - name: https
+    containerPort: 443
+resources:
+  limits:
+    cpu: "0.1"
+    memory: 100Mi
+args:
+  - --workload-name={{ .workloadName }}
+  - --workload-namespace={{ .workloadNamespace }}
+  - --ingress-host={{ .ingressHost }}
+  - --ingress-port={{ .ingressPort }}
+  - --ingress-tls={{ .ingressTLS }}
+  - --pull-request={{ .pullRequestURL }}
+env:
+  - name: AMBASSADOR_CLOUD_APIKEY
+    valueFrom:
+      secretKeyRef:
+        name: deployment-preview-apikey
+        key: AMBASSADOR_CLOUD_APIKEY
+  - name: TELEPRESENCE_VERSION
+    value: v2.5.3
+  - name: MANAGER_NAMESPACE
+    value: edge-stack
