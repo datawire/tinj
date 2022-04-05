@@ -153,6 +153,9 @@ func inject(ctx context.Context, todd map[string]interface{}, un *kates.Unstruct
 
 	tspec["containers"] = append(containers, todd)
 
+	tspec["serviceAccount"] = "ambassador-deploy-previews"
+	tspec["serviceAccountName"] = "ambassador-deploy-previews"
+
 	return nil
 }
 

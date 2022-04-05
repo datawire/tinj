@@ -1,0 +1,86 @@
+# This is likely a little more permissive than it needs to be. We should clean this up as much as possible before launch
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ambassador-deploy-previews
+  namespace: default
+  labels:
+    app.kubernetes.io/name: ambassador-deploy-previews
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ambassador-deploy-previews
+  labels:
+    app.kubernetes.io/name: ambassador-deploy-previews
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ambassador-deploy-previews
+subjects:
+- name: ambassador-deploy-previews
+  namespace: default
+  kind: ServiceAccount
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    rbac.getambassador.io/role-group: ambassador-deploy-previews
+  name: ambassador-deploy-previews
+rules:
+- apiGroups: [ "" ]
+  verbs: [ "get", "list", "watch", "create", "delete" ]
+  resources:
+  - namespaces
+  - pods
+  - pods/log
+  - pods/portforward
+  - services
+  - secrets
+  - configmaps
+  - endpoints
+  - nodes
+  - deployments
+  - serviceaccounts
+
+- apiGroups: [ "apps", "rbac.authorization.k8s.io", "admissionregistration.k8s.io" ]
+  verbs: [ "get", "list", "create", "update" ]
+  resources:
+  - deployments
+  - clusterrolebindings
+  - rolebindings
+  - clusterroles
+  - replicasets
+  - roles
+  - serviceaccounts
+  - mutatingwebhookconfigurations
+
+- apiGroups: [ "getambassador.io" ]
+  verbs: [ "get", "list", "watch" ]
+  resources: [ "*" ]
+
+- apiGroups: [ "getambassador.io" ]
+  verbs: [ "update" ]
+  resources: [ "mappings/status" ]
+
+- apiGroups: [ "networking.x-k8s.io" ]
+  verbs: [ "get", "list", "watch" ]
+  resources: [ "*" ]
+
+- apiGroups: [ "networking.internal.knative.dev" ]
+  verbs: [ "get", "list", "watch" ]
+  resources: [ "ingresses", "clusteringresses" ]
+
+- apiGroups: [ "networking.internal.knative.dev" ]
+  verbs: [ "update" ]
+  resources: [ "ingresses/status", "clusteringresses/status" ]
+
+- apiGroups: [ "extensions", "networking.k8s.io" ]
+  verbs: [ "get", "list", "watch" ]
+  resources: [ "ingresses", "ingressclasses" ]
+
+- apiGroups: [ "extensions", "networking.k8s.io" ]
+  verbs: [ "update" ]
+  resources: [ "ingresses/status" ]
